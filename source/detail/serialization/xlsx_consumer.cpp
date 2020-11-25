@@ -227,6 +227,14 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser)
                     {
                         parser->attribute("aca");   // ignore attribute, see https://github.com/tfussell/xlnt/issues/473
                     }
+                    if (parser->attribute_present("ref"))
+                    {
+                        parser->attribute("ref");   // ignore attribute, see https://github.com/tfussell/xlnt/issues/436
+                    }
+                    if (parser->attribute_present("si"))
+                    {
+                        parser->attribute("si");    // ignore attribute, see https://github.com/tfussell/xlnt/issues/436
+                    }
                 }
             }
             else if (level == 3)
