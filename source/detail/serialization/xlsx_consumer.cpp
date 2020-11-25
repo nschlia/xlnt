@@ -222,6 +222,11 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser)
                 else if (string_equal(parser->name(), "f"))
                 {
                     c.formula_string += std::move(parser->value());
+
+                    if (parser->attribute_present("aca"))
+                    {
+                        parser->attribute("aca");   // ignore attribute, see https://github.com/tfussell/xlnt/issues/473
+                    }
                 }
             }
             else if (level == 3)
