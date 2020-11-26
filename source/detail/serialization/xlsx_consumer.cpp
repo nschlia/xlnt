@@ -164,6 +164,17 @@ xlnt::cell_type type_from_string(const std::string &str)
     return xlnt::cell::type::shared_string;
 }
 
+static void skip_attributes(const std::vector<std::string> &names, xml::parser *parser)
+{
+    for (const auto &name : names)
+    {
+        if (parser->attribute_present(name))
+        {
+            parser->attribute(name);
+        }
+    }
+}
+
 xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser)
 {
     xlnt::detail::Cell c;
@@ -202,6 +213,18 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser)
         {
         case xml::parser::start_element: {
             ++level;
+
+            // ignore attribute, see https://github.com/tfussell/xlnt/issues/473
+            // ignore attribute, see https://github.com/tfussell/xlnt/issues/514
+            if (level == 2)
+            {
+                // <f> formula
+                if (string_equal(parser->name(), "f"))
+                {
+                    // These cause problems if not handled, simply mark them as handled as a work-around.
+                     skip_attributes({ "aca", "ref", "t", "si" }, parser);
+                }
+            }
             break;
         }
         case xml::parser::end_element: {
@@ -222,19 +245,6 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser)
                 else if (string_equal(parser->name(), "f"))
                 {
                     c.formula_string += std::move(parser->value());
-
-                    if (parser->attribute_present("aca"))
-                    {
-                        parser->attribute("aca");   // ignore attribute, see https://github.com/tfussell/xlnt/issues/473
-                    }
-                    if (parser->attribute_present("ref"))
-                    {
-                        parser->attribute("ref");   // ignore attribute, see https://github.com/tfussell/xlnt/issues/436
-                    }
-                    if (parser->attribute_present("si"))
-                    {
-                        parser->attribute("si");    // ignore attribute, see https://github.com/tfussell/xlnt/issues/436
-                    }
                 }
             }
             else if (level == 3)
