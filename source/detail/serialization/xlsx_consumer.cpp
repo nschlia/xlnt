@@ -253,7 +253,7 @@ xlnt::detail::Cell parse_cell(xlnt::row_t row_arg, xml::parser *parser)
         case xml::parser::end_attribute:
         case xml::parser::eof:
         default: {
-            throw xlnt::exception("unexcpected XML parsing event");
+            throw xlnt::exception("unexpected XML parsing event");
         }
         }
     }
